@@ -10,33 +10,9 @@ import (
 )
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	fields := []string{"`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`"}
-	placeholder := []string{"?", "?", "?", "?", "?", "?", "?"}
-	args := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath}
-
-	if create.ID != 0 {
-		fields = append(fields, "`id`")
-		placeholder = append(placeholder, "?")
-		args = append(args, create.ID)
-	}
-
-	if create.CreatedTs != 0 {
-		fields = append(fields, "`created_ts`")
-		placeholder = append(placeholder, "?")
-		args = append(args, create.CreatedTs)
-	}
-
-	if create.UpdatedTs != 0 {
-		fields = append(fields, "`updated_ts`")
-		placeholder = append(placeholder, "?")
-		args = append(args, create.UpdatedTs)
-	}
-
-	if create.MemoID != nil {
-		fields = append(fields, "`memo_id`")
-		placeholder = append(placeholder, "?")
-		args = append(args, *create.MemoID)
-	}
+	fields := []string{"`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`", "`memo_id`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?"}
+	args := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
 
 	stmt := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
@@ -75,8 +51,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 			%s
 		FROM resource
 		WHERE %s
-		GROUP BY id
-		ORDER BY created_ts DESC
+		ORDER BY updated_ts DESC, created_ts DESC
 	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)

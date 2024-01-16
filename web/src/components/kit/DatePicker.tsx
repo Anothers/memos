@@ -1,11 +1,11 @@
 import { Badge, Button } from "@mui/joy";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
-import { getMemoStats } from "@/helpers/api";
+import { useEffect, useRef, useState } from "react";
+import useClickAway from "react-use/lib/useClickAway";
+import { memoServiceClient } from "@/grpcweb";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
-import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
+import { getDateStampByDate, getTimeStampByDate, isFutureDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";
@@ -15,28 +15,38 @@ interface DatePickerProps {
   isFutureDateDisabled?: boolean;
   datestamp: number;
   handleDateStampChange: (datestamp: number) => void;
+  handleClickAway: () => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const t = useTranslate();
-  const { className, isFutureDateDisabled, datestamp, handleDateStampChange } = props;
+  const { className, isFutureDateDisabled, datestamp, handleDateStampChange, handleClickAway } = props;
+  const containerRef = useRef<HTMLDivElement>(null);
   const [currentDateStamp, setCurrentDateStamp] = useState<number>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
   const user = useCurrentUser();
+
+  useClickAway(containerRef, () => {
+    handleClickAway();
+  });
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(extractUsernameFromName(user.name)).then(({ data }) => {
+    (async () => {
+      const { memoCreationStats } = await memoServiceClient.getUserMemosStats({
+        name: user.name,
+      });
       const m = new Map();
-      for (const record of data) {
-        const date = getDateStampByDate(record * 1000);
+      Object.entries(memoCreationStats).forEach(([k]) => {
+        const utcOffsetMilliseconds = new Date().getTimezoneOffset() * 60 * 1000;
+        const date = getDateStampByDate(new Date(getTimeStampByDate(k) + utcOffsetMilliseconds));
         m.set(date, true);
-      }
+      });
       setCountByDate(m);
-    });
+    })();
   }, [user.name]);
 
   const firstDate = new Date(currentDateStamp);
@@ -66,7 +76,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   };
 
   return (
-    <div className={`date-picker-wrapper ${className}`}>
+    <div ref={containerRef} className={`date-picker-wrapper ${className}`}>
       <div className="date-picker-header">
         <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(-12)}>
           <Icon.ChevronsLeft className="icon-img" />

@@ -16,13 +16,12 @@ export const initialGlobalState = async () => {
       disablePasswordLogin: false,
       disablePublicMemos: false,
       maxUploadSizeMiB: 0,
-      autoBackupInterval: 0,
       additionalStyle: "",
       additionalScript: "",
       memoDisplayWithUpdatedTs: false,
       customizedProfile: {
-        name: "memos",
-        logoUrl: "/logo.png",
+        name: "Memos",
+        logoUrl: "/logo.webp",
         description: "",
         locale: "en",
         appearance: "system",
@@ -37,8 +36,8 @@ export const initialGlobalState = async () => {
     defaultGlobalState.systemStatus = {
       ...data,
       customizedProfile: {
-        name: customizedProfile.name || "memos",
-        logoUrl: customizedProfile.logoUrl || "/logo.png",
+        name: customizedProfile.name || "Memos",
+        logoUrl: customizedProfile.logoUrl || "/logo.webp",
         description: customizedProfile.description,
         locale: customizedProfile.locale || "en",
         appearance: customizedProfile.appearance || "system",
@@ -46,8 +45,8 @@ export const initialGlobalState = async () => {
       },
     };
     defaultGlobalState.locale =
-      defaultGlobalState.locale || defaultGlobalState.systemStatus.customizedProfile.locale || findNearestLanguageMatch(i18n.language);
-    defaultGlobalState.appearance = defaultGlobalState.appearance || defaultGlobalState.systemStatus.customizedProfile.appearance;
+      defaultGlobalState.systemStatus.customizedProfile.locale || defaultGlobalState.locale || findNearestLanguageMatch(i18n.language);
+    defaultGlobalState.appearance = defaultGlobalState.systemStatus.customizedProfile.appearance || defaultGlobalState.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));
 };

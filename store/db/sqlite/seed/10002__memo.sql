@@ -20,8 +20,7 @@ VALUES
     '#TODO 
 - [x] Take more photos about **🌄 sunset**;
 - [x] Clean the room;
-- [ ] Read *📖 The Little Prince*;
-(👆 click to toggle status)',
+- [ ] Read *📖 The Little Prince*;',
     101,
     'PROTECTED'
   );
@@ -36,11 +35,8 @@ INSERT INTO
 VALUES
   (
     3,
-    "**[Slash](https://github.com/boojack/slash)**: A bookmarking and url shortener, save and share your links very easily.
-![](https://github.com/boojack/slash/raw/main/resources/demo.gif)
-
-**[TechStack](https://github.com/Get-Tech-Stack/TechStack)**: A browser extension that will display the technology stack of the GitHub repository.
-![](https://github.com/Get-Tech-Stack/TechStack/blob/main/img/1.png?raw=true)",
+    '**[Memos](https://github.com/usememos/memos)**: A lightweight, self-hosted memo hub. Open Source and Free forever. 
+**[Slash](https://github.com/yourselfhosted/slash)**: An open source, self-hosted bookmarks and link sharing platform. Save and share your links very easily.',
     101,
     'PUBLIC'
   );
@@ -58,9 +54,7 @@ VALUES
     '#TODO 
 - [x] Take more photos about **🌄 sunset**;
 - [ ] Clean the classroom;
-- [ ] Watch *👦 The Boys*;
-(👆 click to toggle status)
-',
+- [ ] Watch *👦 The Boys*;',
     102,
     'PROTECTED'
   );

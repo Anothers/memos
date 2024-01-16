@@ -42,12 +42,8 @@ type Memo struct {
 	Visibility Visibility
 
 	// Composed fields
-	// For those comment memos, the parent ID is the memo ID of the memo being commented.
-	// If the parent ID is nil, then this memo is not a comment.
-	ParentID       *int32
-	Pinned         bool
-	ResourceIDList []int32
-	RelationList   []*MemoRelation
+	Pinned   bool
+	ParentID *int32
 }
 
 type FindMemo struct {
@@ -60,16 +56,16 @@ type FindMemo struct {
 	CreatedTsBefore *int64
 
 	// Domain specific fields
-	ContentSearch  []string
-	VisibilityList []Visibility
-	Pinned         *bool
-	HasParent      *bool
-	ExcludeContent bool
+	ContentSearch   []string
+	VisibilityList  []Visibility
+	ExcludeContent  bool
+	ExcludeComments bool
 
 	// Pagination
 	Limit            *int
 	Offset           *int
 	OrderByUpdatedTs bool
+	OrderByPinned    bool
 }
 
 type UpdateMemo struct {
@@ -112,8 +108,4 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 
 func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
 	return s.driver.DeleteMemo(ctx, delete)
-}
-
-func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error) {
-	return s.driver.FindMemosVisibilityList(ctx, memoIDs)
 }
